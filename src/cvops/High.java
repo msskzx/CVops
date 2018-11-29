@@ -1,3 +1,4 @@
+package cvops;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint2f;
@@ -12,9 +13,7 @@ import org.opencv.imgproc.Imgproc;
  *	Muhammad Khattab 34-14154 T11 
  */
 
-public class Main {
-
-	
+public class High {
 
 	public static Mat contrastHighlights(Mat image) {
 		Mat newImage = Mat.zeros(image.size(), image.type());
@@ -184,10 +183,10 @@ public class Main {
 		Mat finalImage = blend(translatedBatman, contrastImage);
 		showImage("Blend", finalImage);
 
-		String imagePath3 = "Z:\\Fun\\CVassi1\\src\\Q2I1.jpg";
-		String imagePath4 = "Z:\\Fun\\CVassi1\\src\\Q2I2.jpg";
-		String imagePath5 = "Z:\\Fun\\CVassi1\\src\\Q2I3.jpg";
-		String imagePath6 = "Z:\\Fun\\CVassi1\\src\\Q3I1.jpg";
+		String imagePath3 = "Z:\\Fun\\CVops\\src\\Q2I1.jpg";
+		String imagePath4 = "Z:\\Fun\\CVops\\src\\Q2I2.jpg";
+		String imagePath5 = "Z:\\Fun\\CVops\\src\\Q2I3.jpg";
+		String imagePath6 = "Z:\\Fun\\CVops\\src\\Q3I1.jpg";
 		Mat image3 = Imgcodecs.imread(imagePath3);
 		Mat image5 = Imgcodecs.imread(imagePath5);
 		Mat image4 = Imgcodecs.imread(imagePath4);

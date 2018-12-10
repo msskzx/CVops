@@ -16,10 +16,10 @@ import org.opencv.imgcodecs.Imgcodecs;
 public class Filtr {
 
 	static Mat enhanceImage(Mat image) {
-		if (measureNoise(image) != 0) {
+		if (measureNoise(image, 120.0) > 60.0) {
 			image = fixNoise(image);
 		}
-		if (measureBlur(image) != 0) {
+		if (measureBlur(image, 120) > 60.0) {
 			image = fixBlur(image);
 		}
 		if (measureCollapsing(image) < 50.0) {
@@ -28,8 +28,52 @@ public class Filtr {
 		return image;
 	}
 
-	public static float measureNoise(Mat image) {
-		return 0;
+	public static double measureNoise(Mat image, double noiseThreshold) {
+		int count = 0;
+
+		byte[] imageData = new byte[(int) (image.total() * image.channels())];
+		image.get(0, 0, imageData);
+
+		for (int x = 0; x < image.cols(); x++) {
+			for (int y = 0; y < image.rows(); y++) {
+
+				// mean
+				double mean = 0;
+				for (int i = x - 1; i < x + 2; i++) {
+					for (int j = y - 1; j < y + 2; j++) {
+						if (validIndex(i, j, image.cols(), image.rows())) {
+							double pixelValue = imageData[(j * image.cols() + i) * image.channels()];
+							pixelValue = pixelValue < 0 ? pixelValue + 256 : pixelValue;
+							mean += pixelValue;
+						}
+					}
+				}
+
+				mean /= 9;
+				double variance = 0;
+
+				// variance
+				for (int i = x - 1; i < x + 2; i++) {
+					for (int j = y - 1; j < y + 2; j++) {
+						if (validIndex(i, j, image.cols(), image.rows())) {
+							double pixelValue = imageData[(j * image.cols() + i) * image.channels()];
+							pixelValue = pixelValue < 0 ? pixelValue + 256 : pixelValue;
+							double intensity = pixelValue - mean;
+							variance += (intensity * intensity);
+						}
+					}
+				}
+
+				variance /= 9;
+
+				if (variance > noiseThreshold) {
+					count++;
+				}
+
+			}
+		}
+
+		return count * 100.0 / image.total();
 	}
 
 	// median filter
@@ -69,8 +113,71 @@ public class Filtr {
 		return newImage;
 	}
 
-	public static float measureBlur(Mat image) {
-		return 0;
+	public static double measureBlur(Mat image, double blurThreshold) {
+		int count = 0;
+
+		byte[] imageData = new byte[(int) (image.total() * image.channels())];
+		image.get(0, 0, imageData);
+
+		for (int x = 0; x < image.cols(); x++) {
+			for (int y = 0; y < image.rows(); y++) {
+
+				int[] idz1 = { x + 1, y - 1, x + 1, y, x + 1, y, x + 1, y + 1 };
+				int[] idz2 = { x - 1, y - 1, x - 1, y, x - 1, y, x - 1, y + 1 };
+				int[] idz3 = { x - 1, y - 1, x, y - 1, x, y - 1, x + 1, y - 1 };
+				int[] idz4 = { x - 1, y + 1, x, y + 1, x, y + 1, x + 1, y + 1 };
+
+				double curpx = 0, part1 = 0, part2 = 0;
+				for (int i = 0; i < idz1.length / 2; i++) {
+					int j = i + 1;
+					if (validIndex(i, j, image.cols(), image.rows())) {
+						double pixelValue = imageData[(j * image.cols() + i) * image.channels()];
+						pixelValue = pixelValue < 0 ? pixelValue + 256 : pixelValue;
+						part1 += pixelValue;
+					}
+				}
+
+				for (int i = 0; i < idz2.length / 2; i++) {
+					int j = i + 1;
+					if (validIndex(i, j, image.cols(), image.rows())) {
+						double pixelValue = imageData[(j * image.cols() + i) * image.channels()];
+						pixelValue = pixelValue < 0 ? pixelValue + 256 : pixelValue;
+						part2 += pixelValue;
+					}
+				}
+
+				curpx = Math.abs(part1 - part2);
+				part1 = 0;
+				part2 = 0;
+
+				for (int i = 0; i < idz3.length / 2; i++) {
+					int j = i + 1;
+					if (validIndex(i, j, image.cols(), image.rows())) {
+						double pixelValue = imageData[(j * image.cols() + i) * image.channels()];
+						pixelValue = pixelValue < 0 ? pixelValue + 256 : pixelValue;
+						part1 += pixelValue;
+					}
+				}
+
+				for (int i = 0; i < idz4.length / 2; i++) {
+					int j = i + 1;
+					if (validIndex(i, j, image.cols(), image.rows())) {
+						double pixelValue = imageData[(j * image.cols() + i) * image.channels()];
+						pixelValue = pixelValue < 0 ? pixelValue + 256 : pixelValue;
+						part2 += pixelValue;
+					}
+				}
+
+				curpx += Math.abs(part1 - part2);
+
+				if (curpx > blurThreshold) {
+					count++;
+				}
+
+			}
+		}
+
+		return count * 100.0 / image.total();
 	}
 
 	public static Mat fixBlur(Mat image) {
@@ -217,18 +324,21 @@ public class Filtr {
 //		String imagePath1 = "Z:\\Fun\\CVops\\src\\1.jpg";
 //		Mat image1 = Imgcodecs.imread(imagePath1);
 //		showImage("Original Image", image1);
-//		image1 = meanFilter(image1);
-//		showImage("Mean Filter - Original Image", image1);
+//		image1 = enhanceImage(image1);
+//		showImage("enhanceImage - Original Image", image1);
+//		System.out.println(measureNoise(image1, 120));
 
-		String imagePath2 = "Z:\\Fun\\CVops\\src\\2.jpg";
-		Mat image2 = Imgcodecs.imread(imagePath2);
-		showImage("Noisy Image", image2);
-		image2 = fixNoise(image2);
+//		String imagePath2 = "Z:\\Fun\\CVops\\src\\2.jpg";
+//		Mat image2 = Imgcodecs.imread(imagePath2);
+//		showImage("Noisy Image", image2);
+//		System.out.println(measureNoise(image2, 120));
+//		image2 = fixNoise(image2);
 //		image2 = enhanceImage(image2);
-		showImage("Fixed Noise in Image", image2);
+//		showImage("Fixed Noise in Image", image2);
 
-//		String imagePath3 = "Z:\\Fun\\CVops\\src\\3.jpg";
-//		Mat image3 = Imgcodecs.imread(imagePath3);
+		String imagePath3 = "Z:\\Fun\\CVops\\src\\3.jpg";
+		Mat image3 = Imgcodecs.imread(imagePath3);
+		System.out.println(measureBlur(image3, .1));
 //		showImage("Blurry Image", image3);
 //		image3 = fixBlur(image3);
 //		showImage("Fixed Blur in Image", image3);

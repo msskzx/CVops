@@ -1,10 +1,5 @@
 package cvops;
 
-/*
- *	Ahmed Elgabri 34-16019 T18
- *	Muhammad Khattab 34-14154 T11 
- */
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;

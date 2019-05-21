@@ -8,11 +8,6 @@ import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 
-/*
- *	Ahmed Elgabri 34-16019 T18
- *	Muhammad Khattab 34-14154 T11 
- */
-
 public class Filtr {
 
 	static Mat enhanceImage(Mat image) {

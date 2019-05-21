@@ -8,11 +8,6 @@ import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-/*
- *	Ahmed Elgabri 34-16019 T18
- *	Muhammad Khattab 34-14154 T11 
- */
-
 public class High {
 
 	public static Mat contrastHighlights(Mat image) {

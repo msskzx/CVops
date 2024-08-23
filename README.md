@@ -11,12 +11,12 @@ Given a corrupted image the program should measure and correct it as follows:
 <table>
   <tr>
     <td style="text-align: center;">
-      <img src="./docs/imgs/8.jpg" alt="Image 1" style="width: 300px;"/>
+      <img src="./docs/imgs/8.jpg" alt="Image 1"/>
       <br>
       <em>Corrupted</em>
     </td>
     <td style="text-align: center;">
-      <img src="./docs/imgs/1.jpg" alt="Image 2" style="width: 300px;"/>
+      <img src="./docs/imgs/1.jpg" alt="Image 2"/>
       <br>
       <em>Fixed</em>
     </td>
